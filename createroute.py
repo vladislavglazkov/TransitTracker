@@ -9,14 +9,17 @@ import json
 
 from basichandlers import add_cancel, default_handler
 import namemanager
+import statushandlers
 
 
+@statushandlers.handles_status
 async def start_route_creation(
         update: Update, context: CallbackContext) -> None:
     context.chat_data["status"] = "confirm_start_point_name"
     await update.effective_chat.send_message("Enter start name", reply_markup=InlineKeyboardMarkup([add_cancel()]))
 
 
+@statushandlers.handles_status
 async def confirm_start_point_name(
         update: Update, context: CallbackContext) -> None:
     name = update.message.text.strip().lower()
@@ -38,6 +41,7 @@ async def confirm_start_point_name(
     context.chat_data["status"] = "request_end_point_name"
 
 
+@statushandlers.handles_status
 async def request_end_point_name(
         update: Update, context: CallbackContext) -> None:
 
@@ -47,6 +51,7 @@ async def request_end_point_name(
     await update.effective_chat.send_message("Enter end name", reply_markup=InlineKeyboardMarkup([add_cancel()]))
 
 
+@statushandlers.handles_status
 async def confirm_end_point_name(
         update: Update, context: CallbackContext) -> None:
     name = update.message.text.strip().lower()
@@ -68,6 +73,7 @@ async def confirm_end_point_name(
     context.chat_data["status"] = "finalize_route_creation"
 
 
+@statushandlers.handles_status
 async def finalize_route_creation(
         update: Update, context: CallbackContext) -> None:
 

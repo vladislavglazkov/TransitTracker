@@ -10,13 +10,19 @@ import json
 import namemanager
 import yandexops
 from datetime import datetime
+import statushandlers
 
 
 async def default_handler(update: Update,
                           context: ContextTypes.DEFAULT_TYPE) -> None:
+    context.chat_data["status"] = "default"
     new_route = InlineKeyboardButton(
-        "Subscribe to new route",
+        "Add new route",
         callback_data=json.dumps({"change_status": "start_route_creation"}))
+
+    remove_route = InlineKeyboardButton(
+        "Remove existing route",
+        callback_data=json.dumps({"change_status": "start_route_removal"}))
 
     routes = json.loads(context.chat_data["routes"])
 
@@ -30,11 +36,13 @@ async def default_handler(update: Update,
                 str, callback_data=json.dumps({
                     "change_status": "answer_request", "route": {"start": route["start"], "end": route["end"]}})))
 
-    btns = InlineKeyboardMarkup.from_row([*routebtns, new_route])
+    btns = InlineKeyboardMarkup.from_row(
+        [*routebtns, new_route] + ([remove_route] if len(routes) > 0 else []))
 
     await update.effective_chat.send_message("Select action", reply_markup=btns)
 
 
+@statushandlers.handles_status
 async def answer_request(update: Update,
                          context: ContextTypes.DEFAULT_TYPE) -> None:
     data = json.loads(update.callback_query.data)

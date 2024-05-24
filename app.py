@@ -7,8 +7,10 @@ import asyncio
 import time
 import json
 from basichandlers import answer_request, default_handler
-import create_route
+import createroute
 import namemanager
+import statushandlers
+import removeroute
 
 
 async def start(update: Update, context: CallbackContext):
@@ -60,18 +62,8 @@ async def dispatcher(update: Update, context: CallbackContext) -> None:
             context.chat_data["status"] = upd["change_status"]
     status = context.chat_data["status"]
 
-    if (status == 'start_route_creation'):
-        await create_route.start_route_creation(update, context)
-    elif status == 'confirm_start_point_name':
-        await create_route.confirm_start_point_name(update, context)
-    elif status == 'confirm_end_point_name':
-        await create_route.confirm_end_point_name(update, context)
-    elif status == 'request_end_point_name':
-        await create_route.request_end_point_name(update, context)
-    elif status == 'finalize_route_creation':
-        await create_route.finalize_route_creation(update, context)
-    elif status == 'answer_request':
-        await answer_request(update, context)
+    if statushandlers.get_handler(context.chat_data["status"]) is not None:
+        await statushandlers.get_handler(context.chat_data["status"])(update, context)
     else:
         context.chat_data["status"] = "default"
         await default_handler(update, context)

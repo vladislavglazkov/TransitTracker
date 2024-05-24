@@ -12,12 +12,13 @@ def find_routes_for_day(start: str, end: str, date: datetime) -> list:
     res = requests.get(req)
 
     data = json.loads(res.content)
-    segments: list = data["segments"]
+    segments: list = data["segments"] if "segments" in data else []
     cur = 100
     while (cur < data["pagination"]["total"]):
         req = f"https://api.rasp.yandex.net/v3.0/search/?apikey={token}&format=json&from={start}&to={end}&lang=ru_RU&date={date.strftime('%Y-%m-%d')}&limit={100}&offset={cur}"
         res = requests.get(req)
-        segments.extend(json.loads(res.content)["segments"])
+        segments.extend(json.loads(res.content)[
+                        "segments"] if "segments" in data else [])
         cur += 100
     return segments
 
