@@ -3,12 +3,11 @@ from telegram import Update
 from telegram.ext import ContextTypes
 import functools
 
-client = pymongo.MongoClient()
-db = client.transittracker
 
-routes = db.get_collection("routes")
-
-res = routes.find_one({})
+def init():
+    global db
+    client = pymongo.MongoClient()
+    db = client.transittracker
 
 
 def connect_mongo_table(name):

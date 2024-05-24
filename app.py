@@ -50,6 +50,7 @@ async def dispatcher(update: Update, context: CallbackContext) -> None:
 
 
 namemanager.init()
+mongoops.init()
 app = ApplicationBuilder().token(
     "7056812856:AAHhDqLXV1KX1fuTpWDYAjUacLd1nPfEfpE").arbitrary_callback_data(True).build()
 
