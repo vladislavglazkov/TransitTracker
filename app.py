@@ -12,11 +12,12 @@ import namemanager
 import statushandlers
 import removeroute
 import locationtracker
+import mongoops
 
 
 async def start(update: Update, context: CallbackContext):
     routes = []
-    context.chat_data["routes"] = json.dumps(routes)
+    # context.chat_data["routes"] = json.dumps(routes)
     context.chat_data["status"] = "default"
     await default_handler(update, context)
 
@@ -37,8 +38,8 @@ async def dispatcher(update: Update, context: CallbackContext) -> None:
             context.chat_data["status"] = upd["change_status"]
     if ("status" not in context.chat_data):
         context.chat_data["status"] = "default"
-    if ("routes" not in context.chat_data):
-        context.chat_data["routes"] = json.dumps([])
+    # if ("routes" not in context.chat_data):
+    #   context.chat_data["routes"] = json.dumps([])
     status = context.chat_data["status"]
 
     if statushandlers.get_handler(context.chat_data["status"]) is not None:

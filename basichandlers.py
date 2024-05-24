@@ -11,10 +11,12 @@ import namemanager
 import yandexops
 from datetime import datetime
 import statushandlers
+import mongoops
 
 
+@mongoops.connect_mongo_table("routes")
 async def default_handler(update: Update,
-                          context: ContextTypes.DEFAULT_TYPE) -> None:
+                          context: ContextTypes.DEFAULT_TYPE, routes, apply) -> None:
     context.chat_data["status"] = "default"
     new_route = InlineKeyboardButton(
         "Add new route",
@@ -23,8 +25,6 @@ async def default_handler(update: Update,
     remove_route = InlineKeyboardButton(
         "Remove existing route",
         callback_data=json.dumps({"change_status": "start_route_removal"}))
-
-    routes = json.loads(context.chat_data["routes"])
 
     routebtns = []
     for route in routes:

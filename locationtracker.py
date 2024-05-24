@@ -12,7 +12,7 @@ from basichandlers import add_cancel, issue_info, default_handler
 import namemanager
 import statushandlers
 from geopy.distance import geodesic
-
+import mongoops
 
 FAR_AWAY = 0
 OUTER_VICINITY = 1
@@ -32,8 +32,9 @@ def get_status(meters):
     return INNER_VICINITY
 
 
+@mongoops.connect_mongo_table("routes")
 async def update_location(update: Update,
-                          context: ContextTypes.DEFAULT_TYPE) -> None:
+                          context: ContextTypes.DEFAULT_TYPE, routes, apply) -> None:
     loc = None
     if update.message is not None:
         loc = update.message.location
@@ -43,7 +44,6 @@ async def update_location(update: Update,
         return
 
     loc = {"latitude": loc.latitude, "longitude": loc.longitude}
-    routes = json.loads(context.chat_data["routes"])
     sent_anything = False
     for route in routes:
         start = route["start"]
@@ -65,13 +65,13 @@ async def update_location(update: Update,
 
         if (former_status == 1 and cur_status == 2):
             diff = datetime.now() - datetime.fromtimestamp(former_status_set)
-            if (diff > timedelta(minutes=10)):
+            if (diff > timedelta(seconds=15)):
                 await issue_info(update, context, route["start"], route["end"])
                 sent_anything = True
 
         if (cur_status != former_status):
             route["status"] = cur_status
             route["status_set"] = datetime.now().timestamp()
+    apply(routes)
     if (sent_anything):
         await default_handler(update, context)
-    context.chat_data["routes"] = json.dumps(routes)

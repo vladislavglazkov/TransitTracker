@@ -10,13 +10,14 @@ import json
 from basichandlers import add_cancel, default_handler
 import namemanager
 import statushandlers
+import mongoops
 
 
 @statushandlers.handles_status
+@mongoops.connect_mongo_table("routes")
 async def start_route_removal(
-        update: Update, context: CallbackContext) -> None:
+        update: Update, context: CallbackContext, routes, apply) -> None:
 
-    routes = json.loads(context.chat_data["routes"])
     btns = []
     for route in routes:
         start_name = namemanager.resolve_id(route["start"])["title"]
@@ -37,10 +38,10 @@ async def start_route_removal(
 
 
 @statushandlers.handles_status
+@mongoops.connect_mongo_table("routes")
 async def finalize_route_removal(
-        update: Update, context: CallbackContext) -> None:
+        update: Update, context: CallbackContext, routes, apply) -> None:
     data = json.loads(update.callback_query.data)
-    routes = json.loads(context.chat_data["routes"])
     await update.callback_query.answer(None)
 
     # for h in routes:
@@ -54,5 +55,5 @@ async def finalize_route_removal(
                        and x["end"] == data["route"]["end"]),
         routes
     ))
-    context.chat_data["routes"] = json.dumps(routes)
+    apply(routes)
     await default_handler(update, context)

@@ -10,6 +10,7 @@ import json
 from basichandlers import add_cancel, default_handler
 import namemanager
 import statushandlers
+import mongoops
 
 
 @statushandlers.handles_status
@@ -60,6 +61,7 @@ async def request_end_point_name(
 @statushandlers.handles_status
 async def confirm_end_point_name(
         update: Update, context: CallbackContext) -> None:
+
     name = update.message.text.strip().lower()
     res = namemanager.resolve_name(name)
     if (len(res) == 0):
@@ -85,13 +87,13 @@ async def confirm_end_point_name(
 
 
 @statushandlers.handles_status
+@mongoops.connect_mongo_table("routes")
 async def finalize_route_creation(
-        update: Update, context: CallbackContext) -> None:
+        update: Update, context: CallbackContext, routes: list, apply) -> None:
 
     end_id = json.loads(update.callback_query.data)["end"]
     start_id = context.chat_data["new_route_start_id"]
-
-    routes: list = json.loads(context.chat_data["routes"])
+    print("Called finalize")
     routes.append({"start": start_id, "end": end_id})
-    context.chat_data["routes"] = json.dumps(routes)
+    apply(routes)
     await default_handler(update, context)
