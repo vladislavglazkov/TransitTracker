@@ -29,6 +29,7 @@ def resolve_id(id):
 
 def resolve_name(title):
     ans = []
+    title = title.lower()
     for station in stations:
 
         if (title in station["title"].lower()):

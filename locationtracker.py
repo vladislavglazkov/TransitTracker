@@ -45,6 +45,7 @@ async def update_location(update: Update,
 
     loc = {"latitude": loc.latitude, "longitude": loc.longitude}
     sent_anything = False
+
     for route in routes:
         start = route["start"]
 
@@ -65,7 +66,7 @@ async def update_location(update: Update,
 
         if (former_status == 1 and cur_status == 2):
             diff = datetime.now() - datetime.fromtimestamp(former_status_set)
-            if (diff > timedelta(seconds=15)):
+            if (diff > timedelta(minutes=10)):
                 await issue_info(update, context, route["start"], route["end"])
                 sent_anything = True
 
