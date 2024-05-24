@@ -42,14 +42,7 @@ async def default_handler(update: Update,
     await update.effective_chat.send_message("Select action", reply_markup=btns)
 
 
-@statushandlers.handles_status
-async def answer_request(update: Update,
-                         context: ContextTypes.DEFAULT_TYPE) -> None:
-    data = json.loads(update.callback_query.data)
-    start = data["route"]["start"]
-    end = data["route"]["end"]
-
-    context.chat_data["status"] = "default"
+async def issue_info(update, context, start: str, end: str) -> None:
     segments: list = list(filter(
         lambda h: h["departure"] >= datetime.now(pytz.utc),
         yandexops.find_routes(
@@ -78,6 +71,17 @@ After that:
 """)
 
     await update.effective_chat.send_message(resstr)
+
+
+@statushandlers.handles_status
+async def answer_request(update: Update,
+                         context: ContextTypes.DEFAULT_TYPE) -> None:
+    data = json.loads(update.callback_query.data)
+    start = data["route"]["start"]
+    end = data["route"]["end"]
+    context.chat_data["status"] = "default"
+
+    await issue_info(update, context, start, end)
     await default_handler(update, context)
 
 
