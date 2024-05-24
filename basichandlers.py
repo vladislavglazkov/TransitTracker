@@ -39,7 +39,7 @@ async def default_handler(update: Update,
     btns = InlineKeyboardMarkup.from_row(
         [*routebtns, new_route] + ([remove_route] if len(routes) > 0 else []))
 
-    await update.effective_chat.send_message("Select action", reply_markup=btns)
+    await update.effective_chat.send_message("Select action", reply_markup=btns, disable_notification=True)
 
 
 async def issue_info(update, context, start: str, end: str) -> None:
