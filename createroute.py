@@ -29,6 +29,12 @@ async def confirm_start_point_name(
             "Not found. Repeat, please",
             reply_markup=InlineKeyboardMarkup([add_cancel()]))
         return
+    if (len(res) > 20):
+        await update.message.reply_text(
+            "Too many matches. Repeat, please",
+            reply_markup=InlineKeyboardMarkup([add_cancel()]))
+        return
+
     btns = []
     for h in res:
         btn = InlineKeyboardButton(
@@ -59,6 +65,11 @@ async def confirm_end_point_name(
     if (len(res) == 0):
         await update.message.reply_text(
             "Not found. Repeat, please",
+            reply_markup=InlineKeyboardMarkup([add_cancel()]))
+        return
+    if (len(res) > 20):
+        await update.message.reply_text(
+            "Too many matches. Repeat, please",
             reply_markup=InlineKeyboardMarkup([add_cancel()]))
         return
     btns = []
