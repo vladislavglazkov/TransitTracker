@@ -1,0 +1,7 @@
+pytest
+pytest_asyncio
+pymongo
+asyncio
+python-telegram-bot
+geopy
+pymongo
