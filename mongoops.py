@@ -12,7 +12,9 @@ def init():
 
 def connect_mongo_table(name):
     def internal_connect(f):
-        table = db.get_collection(name)
+        table = None
+        if "db" in globals():
+            table = db.get_collection(name)
 
         def get_id(update: Update):
             if (update.message):
@@ -24,6 +26,7 @@ def connect_mongo_table(name):
         @functools.wraps(f)
         async def wrap(
                 update: Update, context: ContextTypes.DEFAULT_TYPE, *args):
+            print(f"Inside wrap for {wrap.__wrapped__.__name__}")
             res = table.find_one({"id": get_id(update)})
             data = []
             print(res)
